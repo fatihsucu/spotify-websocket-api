@@ -184,20 +184,18 @@ class SpotifyAPI():
         resp = session.get("https://" + self.auth_server, headers=headers)
         data = resp.text
 
+
         #csrftoken
         rx = re.compile("\"csrftoken\":\"(.*?)\"")
         r = rx.search(data)
-
         if not r or len(r.groups()) < 1:
             Logging.error("There was a problem authenticating, no auth secret found")
             self.do_login_callback(False)
             return False
         secret = r.groups()[0]
-
         #trackingID
         rx = re.compile("\"trackingId\":\"(.*?)\"")
         r = rx.search(data)
-
         if not r or len(r.groups()) < 1:
             Logging.error("There was a problem authenticating, no auth trackingId found")
             self.do_login_callback(False)
@@ -207,17 +205,14 @@ class SpotifyAPI():
         #referrer
         rx = re.compile("\"referrer\":\"(.*?)\"")
         r = rx.search(data)
-
         if not r or len(r.groups()) < 1:
             Logging.error("There was a problem authenticating, no auth referrer found")
             self.do_login_callback(False)
             return False
         referrer = r.groups()[0]
-
         #landingURL
         rx = re.compile("\"landingURL\":\"(.*?)\"")
         r = rx.search(data)
-
         if not r or len(r.groups()) < 1:
             Logging.error("There was a problem authenticating, no auth landingURL found")
             self.do_login_callback(False)
@@ -239,7 +234,6 @@ class SpotifyAPI():
 
         resp = session.post("https://" + self.auth_server + "/xhr/json/auth.php", data=login_payload, headers=headers)
         resp_json = resp.json()
-
         if resp_json["status"] != "OK":
             Logging.error("There was a problem authenticating, authentication failed")
             self.do_login_callback(False)
@@ -252,7 +246,7 @@ class SpotifyAPI():
             "client": "24:0:0:" + str(self.settings["version"])
         }
 
-        resp = session.get('http://' + self.settings["aps"]["resolver"]["hostname"], params=resolver_payload, headers=headers)
+        resp = session.get('https://' + self.settings["aps"]["resolver"]["hostname"], params=resolver_payload, headers=headers)
 
         resp_json = resp.json()
         wss_hostname = resp_json["ap_list"][0].split(":")[0]
@@ -436,13 +430,6 @@ class SpotifyAPI():
             for alternative in track.alternative:
                 if self.is_track_available(alternative, country):
                     return alternative
-            return False
-            for alternative in track.alternative:
-                uri = SpotifyUtil.gid2uri("track", alternative.gid)
-                if uri not in attempted:
-                    attempted += [uri]
-                    subtrack = self.metadata_request(uri)
-                    return self.recurse_alternatives(subtrack, attempted)
             return False
 
     def generate_multiget_args(self, metadata_type, requests):
@@ -913,7 +900,9 @@ class SpotifyAPI():
                 self.send_command("sp/pong_flash2", [pong,], None)
         if cmd == "login_complete":
             Logging.debug("Login Complete")
+
 	    self.user_info_request(self.populate_userdata_callback)
+
     def handle_error(self, err):
         if len(err) < 2:
             Logging.error("Unknown error "+str(err))
@@ -958,6 +947,7 @@ class SpotifyAPI():
     def connect(self, username, password, timeout=10):
         if self.settings is None:
             if not self.auth(username, password):
+                Logging.error("Auth returned as false please check your username, password")
                 return False
             self.username = username
             self.password = password
@@ -973,9 +963,10 @@ class SpotifyAPI():
                 try:
                     self.logged_in_marker.wait(timeout=timeout)
                     return self.is_logged_in
-                except:
+                except Exception, e:
+                    Logging.error(e.message)
                     return False
-        except:
+        except Exception, e:
             self.disconnect()
             return False
 
