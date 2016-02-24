@@ -11,7 +11,7 @@ class Tunigo():
     def __init__(self, region = "us"):
         self.region   = region
         self.root_url = "https://api.tunigo.com/v3/space/"
-        Logging.debug("Starting with Tunigo for region: "  + self.region)
+        Logging.debug("Starting with Tunigo for region: {}".format(self.region))
 
     def getFeaturedPlaylists(self):
       action       = "featured-playlists"
@@ -20,7 +20,7 @@ class Tunigo():
       region_param = "region=" + self.region
       full_url = self.root_url + action + '?' + fixed_params + '&' + date_param + '&' + region_param
       
-      Logging.debug("Tunigo - getFeaturedPlaylists url: " + full_url)
+      Logging.debug("Tunigo - getFeaturedPlaylists url: {}".format(full_url))
       r = requests.get(full_url)
       #Logging.debug("Tunigo - getFeaturedPlaylists response: " + str(r.json()))
       Logging.debug("Tunigo - getFeaturedPlaylists response OK")
@@ -36,7 +36,7 @@ class Tunigo():
       region_param = "region=" + self.region
       full_url = self.root_url + action + '?' + fixed_params + '&' + date_param + '&' + region_param
       
-      Logging.debug("Tunigo - getTopPlaylists url: " + full_url)
+      Logging.debug("Tunigo - getTopPlaylists url: {}".format(full_url))
       r = requests.get(full_url)
       #Logging.debug("Tunigo - getTopPlaylists response: " + str(r.json()))
       Logging.debug("Tunigo - getTopPlaylists response OK")
@@ -52,7 +52,7 @@ class Tunigo():
       region_param = "region=" + self.region
       full_url = self.root_url + action + '?' + fixed_params + '&' + date_param + '&' + region_param
       
-      Logging.debug("Tunigo - getNewReleases url: " + full_url)
+      Logging.debug("Tunigo - getNewReleases url: {}".format(full_url))
       r = requests.get(full_url)
       #Logging.debug("Tunigo - getNewReleases response: " + str(r.json()))
       Logging.debug("Tunigo - getNewReleases response OK")

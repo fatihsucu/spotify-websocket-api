@@ -345,7 +345,7 @@ class SpotifyAPI():
         elif content_type == "vnd.spotify/metadata-track":
             obj = metadata_pb2.Track()
         else:
-            Logging.error("Unrecognised metadata type " + content_type)
+            Logging.error("Unrecognised metadata type {}".format(content_type))
             return False
 
         obj.ParseFromString(body)
@@ -420,9 +420,9 @@ class SpotifyAPI():
                 break
 
         if available:
-            Logging.notice(SpotifyUtil.gid2uri("track", track.gid) + " is available!")
+            Logging.notice("{} is available!".format(SpotifyUtil.gid2uri("track", track.gid)))
         else:
-            Logging.notice(SpotifyUtil.gid2uri("track", track.gid) + " is NOT available!")
+            Logging.notice("{} is NOT available!".format(SpotifyUtil.gid2uri("track", track.gid)))
 
         return available
 
@@ -486,7 +486,7 @@ class SpotifyAPI():
         for uri in uris:
             uri_type = SpotifyUtil.get_uri_type(uri)
             if uri_type == "local":
-                Logging.warn("Track with URI "+uri+" is a local track, we can't request metadata, skipping")
+                Logging.warn("Track with URI {} is a local track, we can't request metadata, skipping".format(uri))
                 continue
 
             id = SpotifyUtil.uri2id(uri)
@@ -839,7 +839,7 @@ class SpotifyAPI():
             return
 
         msg_enc = json.dumps(msg, separators=(',', ':'))
-        Logging.debug("sent " + msg_enc)
+        Logging.debug("sent {}".format(msg_enc))
         try:
             with self.ws_lock:
                 self.ws.send(msg_enc)
@@ -881,7 +881,7 @@ class SpotifyAPI():
         if len(msg) > 1:
             payload = msg[1]
         if cmd == "do_work":
-            Logging.debug("Got do_work message, payload: "+payload)
+            Logging.debug("Got do_work message, payload: {}".format(payload))
             self.send_command("sp/work_done", ["v1"], self.work_callback)
         if cmd == "ping_flash2":
             if len(msg[1]) >= 20:
@@ -962,7 +962,7 @@ class SpotifyAPI():
             self.username = username
             self.password = password
 
-        Logging.notice("Connecting to "+self.settings["wss"])
+        Logging.notice("Connecting to {}".format(self.settings["wss"]))
 
         try:
             self.ws = SpotifyClient(self.settings["wss"])
